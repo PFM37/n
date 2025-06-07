@@ -1,0 +1,32 @@
+{
+  "name": "@pfmcodes/n",
+  "version": "1.0.0",
+  "description": "n*gger is a module node which compiles and does all the heavy work for you",
+  "main": "dist/index.js",
+  "bin": {
+    "n": "dist/index.js"
+  },
+  "scripts": {
+    "test": "tsc && node scripts/fix-shebang.js && npm link"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pfm37/nigga.git"
+  },
+  "keywords": [
+    "work",
+    "heavy",
+    "work",
+    "nigger",
+    "nigga"
+  ],
+  "author": "PFMCODES",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pfm37/nigga/issues"
+  },
+  "homepage": "https://github.com/pfm37/nigga#readme",
+  "devDependencies": {
+    "@types/node": "^22.15.30"
+  }
+}
