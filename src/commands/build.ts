@@ -34,7 +34,7 @@ function build() {
                 else {
                     console.log(out) // prints your browser history 
                 }
-                console.log('build command completed successfully'); // Hell yeah
+                console.log('build completed successfully'); // Hell yeah
             });
             });
         }

@@ -1,35 +1,38 @@
 const { configExists, nconfigPath, nconfig } = require("../global");
 const fs = require("fs");
-const { ask } = require("./init");
-const { c, child_process } = require("../global");
 const path = require("path");
+const { ask, rl } = require("./init");
+const { c, child_process } = require("../global");
+
+function removeGitLockIfExists(repoPath: any) {
+  const lockPath = path.join(repoPath, ".git", "index.lock");
+  if (fs.existsSync(lockPath)) {
+    try {
+      fs.unlinkSync(lockPath);
+      console.log("Removed stale .git/index.lock file");
+    } catch (e: any) {
+      console.error("Failed to remove .git/index.lock:", e.message);
+    }
+  }
+}
 
 function commit(args = []) {
   removeGitLockIfExists(process.cwd());
-  const commitArg = args[0];
 
-  const commitMessage: string = commitArg || nconfig.commit || String(ask("Please provide a commit message: "));
-  const sanitized = commitMessage.replace(/^["'`]|["'`]$/g, "");
-
-  if (configExists && nconfig.commit) {
-    console.log("> git add .");
-    c.exec("git add .", (err1: any) => {
-      if (err1) return console.log("Add error:", err1);
-
-      console.log(`> git commit -m "${commitMessage}"`);
-      c.exec(`git commit -m "${commitMessage}"`, (err2: any, out2: any) => {
-        if (err2) return console.log("Commit error:", err2);
-        console.log(out2);
-      });
-    });
-    return;
+  let commitMessage: string = args[0] || nconfig.commit;
+  if (!commitMessage) {
+    commitMessage = ask("Please provide a commit message: ");
   }
 
-  // Save the commit message to config
-  const raw = fs.readFileSync(nconfigPath, "utf-8");
-  const data = JSON.parse(raw);
-  data.commit = sanitized;
-  fs.writeFileSync(nconfigPath, JSON.stringify(data, null, 2));
+  const sanitized = commitMessage.replace(/^["'`]|["'`]$/g, "");
+
+  // Save the commit message to config if it's new
+  if (!nconfig.commit || nconfig.commit !== sanitized) {
+    const raw = fs.readFileSync(nconfigPath, "utf-8");
+    const data = JSON.parse(raw);
+    data.commit = sanitized;
+    fs.writeFileSync(nconfigPath, JSON.stringify(data, null, 2));
+  }
 
   console.log("> git add .");
   c.exec("git add .", (err1: any) => {
@@ -41,6 +44,7 @@ function commit(args = []) {
       console.log(out2);
     });
   });
+  rl.close()
 }
 
 function push(origin: any, branch: any) {
@@ -69,17 +73,5 @@ function branchExists(branch: any) {
   }
 }
 
-function removeGitLockIfExists(repoPath: any) {
-  const lockPath = path.join(repoPath, ".git", "index.lock");
-  if (fs.existsSync(lockPath)) {
-    try {
-      fs.unlinkSync(lockPath);
-      console.log("Removed stale .git/index.lock file");
-    } catch (e: any) {
-      console.error("Failed to remove .git/index.lock:", e.message);
-    }
-  }
-}
-
-export { push, commit, c };
-module.exports = { push, commit, c };
+export { push, commit, c, branchExists };
+module.exports = { push, commit, c, branchExists };

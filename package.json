@@ -28,8 +28,5 @@
   "homepage": "https://github.com/pfm37/nigga#readme",
   "devDependencies": {
     "@types/node": "^22.15.30"
-  },
-  "dependencies": {
-    "pkg": "^5.8.1"
   }
 }

@@ -12,7 +12,12 @@ switch (command) {
         break;
     }
     case "commit": {
-        commit()
+        if (args[0]) {
+            commit(args[0])
+        }
+        else {
+            commit()
+        }
         break;
     }
     case "push": {
