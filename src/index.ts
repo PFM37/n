@@ -4,6 +4,7 @@ const { commit, push } = require("./commands/commit");
 const { test } = require("./commands/test");
 const { add } = require("./commands/add");
 const { run } = require("./commands/run")
+const { configExists, nconfig } = require("./global")
 
 const [, , command, ...args] = process.argv;
 
@@ -18,10 +19,15 @@ switch (command) {
     break;
 
   case "push":
-    if (args[0] && args[1]) {
-      push(args[0], args[1]); // push <remote> <branch>
-    } else {
-      console.log("Usage: push <remote> <branch>");
+    if (configExists && nconfig.push) {
+        push(nconfig.push)
+    }
+    else {
+        if (args[0] && args[1]) {
+            push(args[0], args[1]); // push <remote> <branch>
+        } else {
+            console.log("Usage: push <remote> <branch> or try adding these arguments");
+        }
     }
     break;
 

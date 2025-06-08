@@ -63,6 +63,7 @@ function push(origin: any, branch: any) {
     if (err) return console.error("Git push failed:", err.message);
     if (stdout) process.stdout.write(stdout);
     if (stderr) process.stderr.write(stderr);
+    process.exit()
   });
 }
 
