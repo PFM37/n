@@ -1,6 +1,6 @@
 {
   "name": "@pfmcodes/n",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "n is a module node which compiles and does all the heavy work for you",
   "main": "dist/index.js",
   "bin": {
@@ -11,21 +11,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pfm37/nigga.git"
+    "url": "git+https://github.com/pfm37/n.git"
   },
   "keywords": [
     "work",
     "heavy",
     "work",
     "nigger",
-    "nigga"
+    "n"
   ],
   "author": "PFMCODES",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/pfm37/nigga/issues"
+    "url": "https://github.com/pfm37/n/issues"
   },
-  "homepage": "https://github.com/pfm37/nigga#readme",
+  "homepage": "https://github.com/pfm37/n#readme",
   "devDependencies": {
     "@types/node": "^22.15.30"
   }
