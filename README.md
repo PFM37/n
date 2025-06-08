@@ -1,5 +1,7 @@
-<img src="./n.svg" style="width: 50px;">
+<img src="./n.svg" alt="n logo" style="width: 50px;">
+
 <h1 style="font-size: 35px;">Install n</h1>
+
 ```bash
 npm i @pfmcodes/n
 ```
