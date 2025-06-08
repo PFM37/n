@@ -1,58 +1,64 @@
-const { configExists, nconfig } = require("./run");
-const fs = require("fs")
-const child_process = require("child_process");
+const { configExists, nconfigPath, nconfig } = require("../global");
+const fs = require("fs");
+const { ask } = require("./init");
+const { c, child_process } = require("../global");
 
-let c = child_process; // i did this because its simplerer to use child_process as c
+function commit(args = []) {
+  const commitArg = args[0];
 
-function commit(args: string) {
-    c.exec(`git add . && git commit -m "${args}"`); // yeah, just commits your work
+  const commitMessage: string = commitArg || String(ask("Please provide a commit message: "));
+  const sanitized = commitMessage.replace(/^["'`]|["'`]$/g, "");
+
+  if (configExists && nconfig.commit) {
+    console.log("> git add .");
+    c.exec("git add .", (err1: any) => {
+      if (err1) return console.log("Add error:", err1);
+
+      console.log(`> git commit -m "${nconfig.commit}"`);
+      c.exec(`git commit -m "${nconfig.commit}"`, (err2: any, out2: any) => {
+        if (err2) return console.log("Commit error:", err2);
+        console.log(out2);
+      });
+    });
+    return;
+  }
+
+  // Save the commit message to config
+  const raw = fs.readFileSync(nconfigPath, "utf-8");
+  const data = JSON.parse(raw);
+  data.commit = sanitized;
+  fs.writeFileSync(nconfigPath, JSON.stringify(data, null, 2));
+
+  console.log("> git add .");
+  c.exec("git add .", (err1: any) => {
+    if (err1) return console.log("Add error:", err1);
+
+    console.log(`> git commit -m "${sanitized}"`);
+    c.exec(`git commit -m "${sanitized}"`, (err2: any, out2: any) => {
+      if (err2) return console.log("Commit error:", err2);
+      console.log(out2);
+    });
+  });
 }
 
-function push(origin: string, branch?: string) {
-    const fallbackBranches = ["main", "master"];
-    const branc = branch || fallbackBranches.find(b => branchExists(b)) || "main";
-    /*
-    this checks if in cli a parameter for branch is provied but if it isn't it just uses main or master becuase thats just most common names for brnaches
-    */
+function push(origin: any, branch: any) {
+  const fallbackBranches = ["main", "master"];
+  const branc = branch || fallbackBranches.find(b => branchExists(b)) || "main";
 
-    if (configExists && JSON.parse(fs.readFileSync(nconfig)).push) {
-        c.exec(`git push ${JSON.parse(fs.readFileSync(nconfig)).push}`, (err: any, stdout: any) => {
-            if (err) {
-            console.error(`Git push failed: ${err.message}`);
-            /*
-            "failure" 
-                - Typical asian parents
-            */
-            return;
-            }
-        console.log(`Git push successful:\n${stdout}`);
-        /*
-        *Happy Happy dancing cat song plays*
-        */
-        });
-        /* 
-        this first checks if n.config.json has "push": "..."  but if it doesn't it just trys the eles staement
-        */
-    } else {
-        c.exec(`git push ${origin} ${branc}`, (err: any, stdout: any) => {
-            if (err) {
-            console.error(`Git push failed: ${err.message}`);
-            /*
-            "failure" 
-                - Typical asian parents
-            */
-            return;
-            }
-            console.log(`Git push successful:\n${stdout}`);
-            /*
-            *Happy Happy dancing cat song plays*
-            */
-        });
-    }
+  if (configExists && nconfig.push) {
+    c.exec(`git push ${nconfig.push}`, (err: any, stdout: any) => {
+      if (err) return console.error(`Git push failed: ${err.message}`);
+      console.log(`Git push successful:\n${stdout}`);
+    });
+  } else {
+    c.exec(`git push ${origin} ${branc}`, (err: any, stdout: any) => {
+      if (err) return console.error(`Git push failed: ${err.message}`);
+      console.log(`Git push successful:\n${stdout}`);
+    });
+  }
 }
 
-// i don't need to explain this
-function branchExists(branch: string): boolean {
+function branchExists(branch: any) {
   try {
     child_process.execSync(`git rev-parse --verify ${branch}`, { stdio: 'ignore' });
     return true;
@@ -61,5 +67,5 @@ function branchExists(branch: string): boolean {
   }
 }
 
-export { push, commit, c }; // exports the fuck out of this file for ESM imports
-exports = { push, commit, c }; // exports the fuck out of this file for commonjs imports
+export { push, commit, c };
+module.exports = { push, commit, c };

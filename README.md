@@ -15,6 +15,6 @@ npm install @pfmcodes/n
 <h3>n is a program made in javascript and typescript which increases effieciency<br>
 it comes with commands like:
 init,
-run,
+build,
 commit,
 push and more...</h3>

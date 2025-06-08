@@ -1,0 +1,10 @@
+{
+  "name": "n",
+  "version": "1.0.0",
+  "description": "n is a module that does all the heavy work for you",
+  "author": "PFMCODES",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "dependencies": {}
+}

@@ -1,5 +1,5 @@
-const { c } = require("./commit");
-const { nconfig } = require("./run")
+const { c } = require("../global");
+const { nconfig } = require("../global")
 
 function test() {
     try {
@@ -11,4 +11,4 @@ function test() {
 }
 
 export { test }
-exports = { test }
+module.exports = { test }
