@@ -2,8 +2,10 @@ const { configExists, nconfigPath, nconfig } = require("../global");
 const fs = require("fs");
 const { ask } = require("./init");
 const { c, child_process } = require("../global");
+const path = require("path");
 
 function commit(args = []) {
+  removeGitLockIfExists(process.cwd());
   const commitArg = args[0];
 
   const commitMessage: string = commitArg || String(ask("Please provide a commit message: "));
@@ -64,6 +66,18 @@ function branchExists(branch: any) {
     return true;
   } catch {
     return false;
+  }
+}
+
+function removeGitLockIfExists(repoPath: any) {
+  const lockPath = path.join(repoPath, ".git", "index.lock");
+  if (fs.existsSync(lockPath)) {
+    try {
+      fs.unlinkSync(lockPath);
+      console.log("Removed stale .git/index.lock file");
+    } catch (e: any) {
+      console.error("Failed to remove .git/index.lock:", e.message);
+    }
   }
 }
 
