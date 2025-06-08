@@ -8,7 +8,7 @@ function commit(args = []) {
   removeGitLockIfExists(process.cwd());
   const commitArg = args[0];
 
-  const commitMessage: string = commitArg || String(ask("Please provide a commit message: "));
+  const commitMessage: string = commitArg || nconfig.commit || String(ask("Please provide a commit message: "));
   const sanitized = commitMessage.replace(/^["'`]|["'`]$/g, "");
 
   if (configExists && nconfig.commit) {
@@ -16,8 +16,8 @@ function commit(args = []) {
     c.exec("git add .", (err1: any) => {
       if (err1) return console.log("Add error:", err1);
 
-      console.log(`> git commit -m "${nconfig.commit}"`);
-      c.exec(`git commit -m "${nconfig.commit}"`, (err2: any, out2: any) => {
+      console.log(`> git commit -m "${commitMessage}"`);
+      c.exec(`git commit -m "${commitMessage}"`, (err2: any, out2: any) => {
         if (err2) return console.log("Commit error:", err2);
         console.log(out2);
       });
