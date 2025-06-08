@@ -1,10 +1,8 @@
-const { configExists, nconfigPath, nconfig } = require("../global");
+const { configExists, nconfigPath, nconfig, c, child_process, ask, rl } = require("../global");
 const fs = require("fs");
 const path = require("path");
-const { ask, rl } = require("./init");
-const { c, child_process } = require("../global");
 
-function removeGitLockIfExists(repoPath: any) {
+function removeGitLockIfExists(repoPath: string) {
   const lockPath = path.join(repoPath, ".git", "index.lock");
   if (fs.existsSync(lockPath)) {
     try {
@@ -20,13 +18,14 @@ function commit(args = []) {
   removeGitLockIfExists(process.cwd());
 
   let commitMessage: string = args[0] || nconfig.commit;
+
   if (!commitMessage) {
     commitMessage = ask("Please provide a commit message: ");
   }
 
   const sanitized = commitMessage.replace(/^["'`]|["'`]$/g, "");
 
-  // Save the commit message to config if it's new
+  // Save to config if new
   if (!nconfig.commit || nconfig.commit !== sanitized) {
     const raw = fs.readFileSync(nconfigPath, "utf-8");
     const data = JSON.parse(raw);
@@ -36,32 +35,35 @@ function commit(args = []) {
 
   console.log("> git add .");
   c.exec("git add .", (err1: any) => {
-    if (err1) return console.log("Add error:", err1);
+    if (err1) return console.error("Add error:", err1);
 
     console.log(`> git commit -m "${sanitized}"`);
-    c.exec(`git commit -m "${sanitized}"`, (err2: any, out2: any) => {
-      if (err2) return console.log("Commit error:", err2);
-      console.log(out2);
+    c.exec(`git commit -m "${sanitized}"`, (err2: any, stdout2: any, stderr2: any) => {
+      if (err2) return console.error("Commit error:", err2);
+      if (stdout2) process.stdout.write(stdout2);
+      if (stderr2) process.stderr.write(stderr2);
+
+      if (rl && rl.close) rl.close();
+      process.exit(0);
     });
   });
-  rl.close()
 }
 
 function push(origin: any, branch: any) {
   const fallbackBranches = ["main", "master"];
-  const branc = branch || fallbackBranches.find(b => branchExists(b)) || "main";
+  const targetBranch = branch || fallbackBranches.find(b => branchExists(b)) || "main";
+  const remote = origin || "origin";
 
-  if (configExists && nconfig.push) {
-    c.exec(`git push ${nconfig.push}`, (err: any, stdout: any) => {
-      if (err) return console.error(`Git push failed: ${err.message}`);
-      console.log(`Git push successful:\n${stdout}`);
-    });
-  } else {
-    c.exec(`git push ${origin} ${branc}`, (err: any, stdout: any) => {
-      if (err) return console.error(`Git push failed: ${err.message}`);
-      console.log(`Git push successful:\n${stdout}`);
-    });
-  }
+  const pushCmd = configExists && nconfig.push
+    ? `git push ${nconfig.push}`
+    : `git push ${remote} ${targetBranch}`;
+
+  console.log("> " + pushCmd);
+  c.exec(pushCmd, (err: any, stdout: any, stderr: any) => {
+    if (err) return console.error("Git push failed:", err.message);
+    if (stdout) process.stdout.write(stdout);
+    if (stderr) process.stderr.write(stderr);
+  });
 }
 
 function branchExists(branch: any) {
@@ -73,5 +75,5 @@ function branchExists(branch: any) {
   }
 }
 
-export { push, commit, c, branchExists };
-module.exports = { push, commit, c, branchExists };
+module.exports = { push, commit, branchExists };
+export { push, commit, branchExists }

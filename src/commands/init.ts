@@ -1,22 +1,7 @@
 const fs = require("fs")
-const readline = require("readline")
-
-let rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-
-    // initializes realine and store it to rl variable
-
-let ask = (prompt: string): Promise<string> => {
-    return new Promise(resolve => rl.question(prompt, (answer: string) => resolve(answer.trim())));
-};
+const { rl, ask } = require("../global")
 
 async function init() {
-    
-
-    // asks a question to your ass
-
     try {
         // try once and never again(this joke is about you)
         const build = await ask('Enter the build command: ');
@@ -37,8 +22,9 @@ async function init() {
         throw err;
     } finally {
         rl.close();
+        process.exit()
     }
 }
 
-module.exports = { init, ask, rl }
-export { init, ask, rl }
+module.exports = { init, ask }
+export { init, ask }

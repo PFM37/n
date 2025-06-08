@@ -1,7 +1,6 @@
 const fs = require('fs');
-const { c } = require("../global")
-const { nconfig, configExists } = require("../global")
-const { init } = require("./add")
+const { c, nconfig, configExists, ask } = require("../global")
+const { init } = require("./init")
 
 function build() {
     if (configExists 
@@ -18,7 +17,7 @@ function build() {
             c.exec('npm install', (err: any, stdout: any) => {
             if (err) {
                 console.error('npm install failed:', err); // you're brain is probably gonna crash after trying to read the error message
-                return; // go back to your time, adopted kitler
+                process.exit()
             }
             else {
                 console.log(stdout)
@@ -35,12 +34,20 @@ function build() {
                     console.log(out) // prints your browser history 
                 }
                 console.log('build completed successfully'); // Hell yeah
+                process.exit()
             });
             });
         }
     } else {
-        console.error('n.config.json not found.'); // guess why? Because it wasn't fucking created. Ok you're a fucking piece of shit anyways and you probably doesn't know the full form of json so let me create it for you
-        init();
+        console.log("Looks like n.config.json doesn't exist")
+        const a = ask("would you like to create it?")
+        if (a === "yes") {
+            init()
+        }
+        else {
+            return;
+            process.exit()
+        }
     }
 }
 
