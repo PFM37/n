@@ -1,7 +1,7 @@
+#!/usr/bin/env ts-node
 const { init } = require("./commands/init");
 const { build } = require("./commands/build");
 const { commit, push } = require("./commands/commit");
-const { test } = require("./commands/test");
 const { add } = require("./commands/add");
 const { run } = require("./commands/run")
 const { configExists, nconfig } = require("./global")
@@ -29,10 +29,6 @@ switch (command) {
             console.log("Usage: push <remote> <branch> or try adding these arguments");
         }
     }
-    break;
-
-  case "test":
-    test();
     break;
 
   case "init":
